@@ -1,55 +1,129 @@
 import numpy as np
 from datetime import date
+import datetime
 
 
 #Where we store a person's income dictionary and spending dictionary
 #Each Dictionary consists of a dictionary of lists, with keys as dates
 #Able to append and access values for spending/income based on date
+#Also manages limits on spending based on income
 class Person:
-    def __init__(self,name, income, spend = 0):
+    def __init__(self,name, income, spend = 0, monthlyIncome = 0.0 ):
         self.name = name
         self.income = {} 
         self.spend = {}
-
+        self.needlimit = 0.5*monthlyIncome
+        self.wantlimit = 0.3*monthlyIncome
+        self.monthly_income = monthlyIncome
     
     
 #Income and Spending functions
 #2022-12-27  ----- example of date from date.today
-    def add_income(self, transaction, dates = date.today):
+
+# This will take in the current month and year and return the monthly income for it
+    def get_total_monthly_income(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0
+        for i in range (1, 31):
+            temp = datetime.date(year, month, i)
+            if (temp in self.income):
+                income_list = self.income[temp]
+                for i in range(0, len(income_list)):
+                    monthly += income_list[i].amount
+        return(monthly)
+# This will take in the current month and year and return the monthly spend for it    
+    def get_total_monthly_spending(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0
+        for i in range (1, 31):
+            temp = datetime.date(year, month, i)
+            if (temp in self.spend):
+                spend_list = self.spend[temp]
+                for i in range(0, len(spend_list)):
+                    monthly += spend_list[i].amount
+        return(monthly)
+
+# This will take in the current month, year and the category for which we need to find the monthly spend for and returns the monthly spend for the category    
+    def get_categorical_monthly_spending(self, category, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0
+        for i in range (1, 31):
+            temp = str(year) + "-" + str(month) + "-" + str(i)
+            if (temp in self.spend):
+                spend_list = self.spend[temp]
+                for i in range(0, len(spend_list)):
+                    if (spend_list[i].category == category):
+                        monthly += spend_list[i].amount
+        return(monthly)
+
+# This takes in an object of class income and appned it to the list of values in the dictionary with todays date as the key               
+    def add_income(self, transaction, dates = date.today()):
         if dates in self.income:
             self.income[dates].append(transaction)
         else:
             self.income[dates] = [transaction]
+
+# # This takes in an object of class spend and appned it to the list of values in the dictionary with todays date as the key      
+    def add_spending(self, transaction, dates = date.today()):
+        if (transaction.amount + self.get_total_monthly_spending()) > self.wantlimit:
+            print("Spending over Want Limit")
+        elif (transaction.amount + self.get_total_monthly_spending()) > self.needlimit:
+            print("Spending over Need Limit")
         
-    def add_spending(self, transaction, dates = date.today):
         if dates in self.spend:
             self.spend[dates].append(transaction)
         else:
             self.spend[dates] = [transaction]
-        
-    def get_total_income(self, dates = date.today):
+
+# This will return the total life income of the person    
+    def get_total_income(self):
+        total_income = 0.0
+        for i in self.income:
+            income_list = self.income[i]
+            for j in range(0, len(income_list)):
+                total_income += income_list[j].amount
+        return(total_income)
+
+# This will return the total income for today
+    def get_day_total_income(self, dates = date.today()):
+        if (self.income.get(dates) is None):
+            return 0
         income_list = self.income[dates]
         total_income = 0.0
         for i in range(0, len(income_list)):
             total_income += income_list[i].amount
         return(total_income)
 
-    def get_total_spending(self, dates = date.today):
+# This will return the total life spending of the person    
+    def get_total_spending(self):
+        total_spend = 0.0
+        for i in self.spend:
+            spend_list = self.spend[i]
+            for j in range(0, len(spend_list)):
+                total_spend += spend_list[j].amount
+        return(total_spend)
+
+# This will return the total spend of today for the person
+    def get_day_total_spending(self, dates = date.today()):
+        if (self.spend.get(dates) is None):
+            return 0
         spend_list = self.spend[dates]
         total_spend = 0.0
         for i in range(0, len(spend_list)):
             total_spend -= spend_list[i].amount
         return(total_spend)
 
-    def get_total_difference(self, dates = date.today):
-        income_list = self.income[dates]
-        spend_list = self.spend[dates]
-        total = 0.0
-        for i in range(0, len(income_list)):
-            total += income_list[i].amount
-        for i in range(0, len(spend_list)):
-            total -= spend_list[i].amount
+# This will return the difference in the life income and spend of the person
+    def get_total_difference(self):
+        total = 0
+        total += self.get_total_income()
+        total -= self.get_total_spending()
         return(total)
+
+# This will return the difference in todays income and spend of the person        
+    def get_day_total_difference(self, dates = date.today()):
+        total = 0,0
+        total += self.get_day_total_income()
+        total -= self.get_day_total_income()
+        return(total)  
+    
     
 #Income Class
 #transaction_name is the name of the transaction
@@ -83,8 +157,7 @@ class Spend():
         self.type = types
 
 
-
-
+# Testing Functions
 transaction_name1 = "Grocery"
 amount1 = 100
 category1 = "Food"
@@ -109,17 +182,27 @@ category4 = "Gift"
 notes4 = "Return money to Hamiz"
 types4 = "Checking"
 
+
+#Spending/Income Transaction Objects
 spend = Spend(transaction_name1, amount1, category1, notes1, types1)
 income = Income(transaction_name2, amount2, category2, notes2, types2)
 income2 = Income(transaction_name3, amount3, category3, notes3, types3)
 spend2 = Spend(transaction_name4, amount4, category4, notes4, types4)
-person = Person("Jacob", {}, {})
+person = Person("Jacob", {}, {}, 1000)
 
-person.add_income(income)
-person.add_income(income2)
+person.add_income(income, datetime.date(2022, 12, 1))
+person.add_income(income2, datetime.date(2022, 12, 3))
+person.add_income(income2, datetime.date(2022, 12, 5))
+person.add_income(income2, datetime.date(2022, 12, 14))
+person.add_income(income2, datetime.date(2022, 12, 31))
+person.add_income(income2, datetime.date(2022, 12, 22))
+person.add_income(income2, datetime.date(2022, 1, 3))
+person.add_income(income2, datetime.date(2022, 1, 30))
+
+
 person.add_spending(spend)
 person.add_spending(spend2)
-print("helloworld")
 print("Income: ",person.get_total_income())
+print("Monthly December Income: ", person.get_total_monthly_income(12, 2022))
 print("Spending: ",person.get_total_spending())
 print("Balance: ", person.get_total_difference())
