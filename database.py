@@ -1,6 +1,8 @@
 import numpy as np
+import pandas as pd
 from datetime import date
 import datetime
+import calendar
 
 
 #Where we store a person's income dictionary and spending dictionary
@@ -23,13 +25,114 @@ class Person:
 # This will take in the current month and year and return the monthly income for it
     def get_total_monthly_income(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
         monthly = 0
-        for i in range (1, 31):
+        num_days = calendar.monthrange(year, month)[1]
+        for i in range (1, num_days):
             temp = datetime.date(year, month, i)
             if (temp in self.income):
                 income_list = self.income[temp]
                 for i in range(0, len(income_list)):
                     monthly += income_list[i].amount
         return(monthly)
+
+# This will take in the current month and year and return a dataframe for the monthly trend
+
+    def get_trend_monthly_income(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0 
+        num_days = calendar.monthrange(year, month)[1]
+        
+        #days = [datetime.date(year, month, day) for day in range (1, num_days+1)]
+        income_days = []
+        days = []
+
+        for i in range (1, num_days+1):
+            temp = datetime.date(year, month, i)
+            if (temp in self.income):
+                income_list = self.income[temp]
+                for j in range(0, len(income_list)):
+                    monthly += income_list[j].amount
+                income_days.append(monthly)
+                days.append(i)
+        trend = pd.DataFrame({'Days': days, 'Income': income_days})
+        return(trend)
+    
+    def get_trend_yearly_income(self, year = datetime.datetime.now().year):
+        income_monthly = []
+        month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        month_with_income = []
+
+        for i in range(12):
+            
+            monthly_income = self.get_total_monthly_income(i + 1, year)
+            if (monthly_income != 0):
+                income_monthly.append(monthly_income)
+                month_with_income.append(month[i])
+                
+        
+        trend = pd.DataFrame({'Month': month_with_income, 'Income': income_monthly})
+        return(trend)
+    
+# Returns 
+    def get_trend_monthly_spend(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0 
+        num_days = calendar.monthrange(year, month)[1]
+        
+        #days = [datetime.date(year, month, day) for day in range (1, num_days+1)]
+        spend_days = []
+        days = []
+
+        for i in range (1, num_days+1):
+            temp = datetime.date(year, month, i)
+            if (temp in self.spend):
+                spend_list = self.spend[temp]
+                for j in range(0, len(spend_list)):
+                    monthly += spend_list[j].amount
+                spend_days.append(monthly)
+                days.append(i)
+        trend = pd.DataFrame({'Days': days, 'Spending': spend_days})
+        return(trend)
+
+# Returns a dataframe containing difference between spending and income in a month, used in monthly trend
+    def get_trend_monthly_difference(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0 
+        num_days = calendar.monthrange(year, month)[1]
+        
+        #days = [datetime.date(year, month, day) for day in range (1, num_days+1)]
+        dif_days = []
+        days = []
+        income_check = False
+        spend_check = False
+        for i in range (1, num_days+1):
+            temp = datetime.date(year, month, i)
+            if (temp in self.spend):
+                spend_list = self.spend[temp]
+                for j in range(0, len(spend_list)):
+                    monthly -= spend_list[j].amount
+                income_check = True
+            if (temp in self.income):
+                income_list = self.income[temp]
+                for j in range(0, len(income_list)):
+                    monthly += income_list[j].amount
+                spend_check = True
+            if (spend_check or income_check):
+                dif_days.append(monthly)
+                days.append(i)
+            income_check = False
+            spend_check = False
+        trend = pd.DataFrame({'Days': days, 'Difference': dif_days})
+        return(trend)
+
+        
+
+#Remove Transaction from Income from certain day if it exists
+    def delete_income(self, transaction, dates = date.today()):
+        if (dates in self.income) and (transaction in self.income[dates]):
+            self.income[dates].remove(transaction)
+        
+#Remove Transaction from Spend from certain day if it exists
+    def delete_spending(self, transaction, dates = date.today()):
+        if (dates in self.spend) and (transaction in self.spend[dates]):
+            self.spend[dates].remove(transaction)
+
 # This will take in the current month and year and return the monthly spend for it    
     def get_total_monthly_spending(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
         monthly = 0
@@ -62,10 +165,10 @@ class Person:
 
 # # This takes in an object of class spend and appned it to the list of values in the dictionary with todays date as the key      
     def add_spending(self, transaction, dates = date.today()):
-        if (transaction.amount + self.get_total_monthly_spending()) > self.wantlimit:
-            print("Spending over Want Limit")
-        elif (transaction.amount + self.get_total_monthly_spending()) > self.needlimit:
-            print("Spending over Need Limit")
+        # if (transaction.amount + self.get_total_monthly_spending()) > self.wantlimit:
+        #     print("Spending over Want Limit")
+        # elif (transaction.amount + self.get_total_monthly_spending()) > self.needlimit:
+        #     print("Spending over Need Limit")
         
         if dates in self.spend:
             self.spend[dates].append(transaction)
@@ -124,6 +227,8 @@ class Person:
         total -= self.get_day_total_income()
         return(total)  
     
+    
+
     
 #Income Class
 #transaction_name is the name of the transaction
@@ -200,9 +305,24 @@ person.add_income(income2, datetime.date(2022, 1, 3))
 person.add_income(income2, datetime.date(2022, 1, 30))
 
 
-person.add_spending(spend)
-person.add_spending(spend2)
+person.add_spending(spend, datetime.date(2022, 12, 5))
+person.add_spending(spend2, datetime.date(2022, 12, 15))
+person.add_spending(spend2, datetime.date(2022, 1, 15))
 print("Income: ",person.get_total_income())
 print("Monthly December Income: ", person.get_total_monthly_income(12, 2022))
-print("Spending: ",person.get_total_spending())
+print("Spending: ",person.get_total_spending()) 
 print("Balance: ", person.get_total_difference())
+print(person.get_trend_monthly_income(12, 2022))
+print(person.get_trend_monthly_income(1, 2022))
+print(person.get_trend_yearly_income(2022))
+print(person.get_trend_monthly_spend(12, 2022))
+print(person.get_trend_monthly_spend(1, 2022))
+
+
+person.delete_income(income, datetime.date(2022, 12, 1))
+print(person.get_trend_monthly_income(12, 2022))
+person.delete_income(spend, datetime.date(2022, 12, 5))
+print(person.get_trend_monthly_spend(12, 2022))
+print(person.get_trend_yearly_income(2022))
+print(person.get_trend_monthly_difference(12, 2022))
+
