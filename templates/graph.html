@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Income Trend</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='graph.css') }}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <h1>Monthly Income Trend</h1>
@@ -31,5 +35,8 @@
             });
         });
     </script>
+        <form action="/" method="get">
+            <button type="submit">return back</button>
+        </form>
 </body>
 </html>

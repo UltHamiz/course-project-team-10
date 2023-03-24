@@ -1,0 +1,27 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SF Pro Display', sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+#income-trend-plot {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+input[type="submit"]:hover, button:hover {
+    background-color: #0058a5;
+}
