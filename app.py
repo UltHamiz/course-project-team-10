@@ -105,7 +105,7 @@ def trend_monthly_income():
     trend_data = person.get_trend_monthly_income(12, 2022)
     return jsonify(trend_data.to_dict(orient='records'))
 
-@app.route('/graph')
+@app.route('/graph', methods=['POST'])
 def graph():
     return render_template('graph.html')
 
