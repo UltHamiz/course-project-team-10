@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pandas as pd
 from datetime import date
@@ -98,6 +98,17 @@ def add_spending():
     person.add_spending(spend_transaction, date_object)
     
     return index()
+
+
+@app.route('/trend_monthly_income', methods=['GET'])
+def trend_monthly_income():
+    trend_data = person.get_trend_monthly_income(12, 2022)
+    return jsonify(trend_data.to_dict(orient='records'))
+
+@app.route('/graph')
+def graph():
+    return render_template('graph.html')
+
 
 if __name__ == '__main__':
     #person = Person("Jacob", {}, {}, 1000)

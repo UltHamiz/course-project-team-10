@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Income Trend</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Monthly Income Trend</h1>
+    <div id="income-trend-plot"></div>
+
+    <script>
+        $(document).ready(function() {
+            $.getJSON('/trend_monthly_income', function(data) {
+                var trace = {
+                    x: data.map(row => row.Days),
+                    y: data.map(row => row.Income),
+                    mode: 'lines+markers',
+                    type: 'scatter'
+                };
+
+                var layout = {
+                    title: 'Monthly Income Trend',
+                    xaxis: {title: 'Day of the Month'},
+                    yaxis: {title: 'Income'}
+                };
+
+                Plotly.newPlot('income-trend-plot', [trace], layout);
+            });
+        });
+    </script>
+</body>
+</html>
