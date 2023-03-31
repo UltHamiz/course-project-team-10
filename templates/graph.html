@@ -33,94 +33,80 @@
     <label for="month">Month:</label>
     <input type="number" id="month" name="month" value="12" min="1" max="12">
 
-    <!-- Add a button to update the graph -->
-    <button id="update-trend">Update</button>
-
     <script>
       function updateGraph() {
-        var year = document.getElementById("year").value;
-        var month = document.getElementById("month").value;
+  var year = document.getElementById("year").value;
+  var month = document.getElementById("month").value;
+  var range = document.getElementById("range").value;
+  var functionType = document.getElementById("function-type").value;
 
-        $.getJSON(`/trend_monthly_income/${year}/${month}`, function (data) {
-          var trace = {
-            x: data.map((row) => row.Days),
-            y: data.map((row) => row.Income),
-            mode: "lines+markers",
-            type: "scatter",
-          };
+  var apiEndpoint = "";
 
-          var layout = {
-            title: "Monthly Income Trend",
-            xaxis: { title: "Day of the Month" },
-            yaxis: { title: "Income" },
-          };
+  if (range === "Monthly") {
+    apiEndpoint = `/trend_monthly_income/${year}/${month}`;
+  } else if (range === "Yearly") {
+    apiEndpoint = `/trend_yearly_income/${year}`;
+  }
 
-          Plotly.newPlot("income-trend-plot", [trace], layout);
+  $.getJSON(apiEndpoint, function (data) {
+    var y = null;
 
-          var functionType = document.getElementById("function-type");
-          var range = document.getElementById("range");
+    if (functionType === "Income") {
+      y = data.map((row) => row.Income);
+    } else if (functionType === "Spending") {
+      y = data.map((row) => row.Spending);
+    } else if (functionType === "Balance") {
+      y = data.map((row) => row.Balance);
+    }
 
-          functionType.addEventListener("change", function () {
-            // update trace based on function type
-            var y = null;
+    var trace = {
+      x: data.map((row) => row.Days),
+      y: y,
+      mode: "lines+markers",
+      type: "scatter",
+    };
 
-            if (functionType.value === "Income") {
-              y = data.map((row) => row.Income);
-            } else if (functionType.value === "Spending") {
-              y = data.map((row) => row.Spending);
-            } else if (functionType.value === "Balance") {
-              y = data.map((row) => row.Balance);
-            }
+    var layout = {
+      title: range + " " + functionType + " Trend",
+      xaxis: { title: range === "Monthly" ? "Day of the Month" : "Month" },
+      yaxis: { title: functionType },
+    };
 
-            var updatedTrace = {
-              x: data.map((row) => row.Days),
-              y: y,
-              mode: "lines+markers",
-              type: "scatter",
-            };
-
-            Plotly.update("income-trend-plot", [updatedTrace], layout);
-          });
-
-         
-          range.addEventListener("change", function () {
-            // update layout based on range
-            var updatedLayout = {};
-
-            if (range.value === "Monthly") {
-              updatedLayout = {
-                title: "Monthly Income Trend",
-                xaxis: { title: "Day of the Month" },
-                yaxis: { title: functionType.value },
-              };
-            } else if (range.value === "Yearly") {
-              updatedLayout = {
-                title: "Yearly Income Trend",
-                xaxis: { title: "Month" },
-                yaxis: { title: functionType.value },
-              };
-            } else if (range.value === "Custom") {
-              updatedLayout = {
-                title: "Custom Income Trend",
-                xaxis: { title: "Custom Axis Label" },
-                yaxis: { title: functionType.value },
-              };
-            }
-
-            Plotly.update("income-trend-plot", [trace], updatedLayout);
-          });
-        });
-      }
+    Plotly.newPlot("income-trend-plot", [trace], layout);
+  });
+}
 
       // Call the updateGraph function when the page loads
       $(document).ready(function () {
         updateGraph();
       });
 
-      // Add an event listener for the "Update" button
-      $("#update-trend").on("click", function () {
+      // Add event listeners
+      var functionType = document.getElementById("function-type");
+      var range = document.getElementById("range");
+      var year = document.getElementById("year");
+      var month = document.getElementById("month");
+
+      functionType.addEventListener("change", function () {
+        // Update trace based on function type
         updateGraph();
       });
+
+      range.addEventListener("change", function () {
+        // Update layout based on range
+        updateGraph();
+      });
+
+      year.addEventListener("change", function () {
+        // Update graph when year is changed
+        updateGraph();
+      });
+
+      month.addEventListener("change", function () {
+        // Update graph when month is changed
+        updateGraph();
+      });
+
     </script>
 
     <form action="/" method="get">
