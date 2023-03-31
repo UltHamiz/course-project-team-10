@@ -100,9 +100,9 @@ def add_spending():
     return index()
 
 
-@app.route('/trend_monthly_income', methods=['GET'])
-def trend_monthly_income():
-    trend_data = person.get_trend_monthly_income(12, 2022)
+@app.route('/trend_monthly_income/<int:year>/<int:month>', methods=['GET'])
+def trend_monthly_income(year, month):
+    trend_data = person.get_trend_monthly_income(month, year)
     return jsonify(trend_data.to_dict(orient='records'))
 
 @app.route('/graph', methods=['POST'])
