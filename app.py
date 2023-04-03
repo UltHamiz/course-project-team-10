@@ -46,12 +46,12 @@ person = Person("Jacob", {}, {}, 1000)
 
 person.add_income(income, datetime.date(2022, 12, 1))
 person.add_income(income2, datetime.date(2022, 12, 3))
-person.add_income(income2, datetime.date(2022, 12, 5))
-person.add_income(income2, datetime.date(2022, 12, 14))
-person.add_income(income2, datetime.date(2022, 12, 31))
-person.add_income(income2, datetime.date(2022, 12, 22))
-person.add_income(income2, datetime.date(2022, 1, 3))
-person.add_income(income2, datetime.date(2022, 1, 30))
+person.add_income(income2, datetime.date(2022, 7, 5))
+person.add_income(income2, datetime.date(2022, 6, 14))
+person.add_income(income2, datetime.date(2022, 5, 31))
+person.add_income(income2, datetime.date(2022, 4, 22))
+person.add_income(income2, datetime.date(2022, 2, 3))
+person.add_income(income2, datetime.date(2022, 3, 30))
 
 
 person.add_spending(spend, datetime.date(2022, 12, 5))
@@ -61,6 +61,7 @@ person.add_spending(spend2, datetime.date(2022, 1, 15))
 person.add_spending(spend3, datetime.date(2023, 1, 1))
 #end of testing
 
+# index.html routes
 
 @app.route('/')
 def index():
@@ -99,16 +100,31 @@ def add_spending():
     
     return index()
 
+# graph.html routes
 
 @app.route('/trend_monthly_income/<int:year>/<int:month>', methods=['GET'])
 def trend_monthly_income(year, month):
     trend_data = person.get_trend_monthly_income(month, year)
     return jsonify(trend_data.to_dict(orient='records'))
 
+
 @app.route('/trend_yearly_income/<int:year>', methods=['GET'])
 def trend_yearly_income(year):
     trend_data = person.get_trend_yearly_income(year)
     return jsonify(trend_data.to_dict(orient='records'))
+
+
+@app.route('/trend_monthly_spend/<int:year>/<int:month>', methods=['GET'])
+def trend_monthly_spend(year, month):
+    trend_data = person.get_trend_monthly_spend(month, year)
+    return jsonify(trend_data.to_dict(orient='records'))
+
+
+@app.route('/trend_monthly_diff/<int:year>/<int:month>', methods=['GET'])
+def trend_monthly_difference(year, month):
+    trend_data = person.get_trend_monthly_difference(month, year)
+    return jsonify(trend_data.to_dict(orient='records'))
+
 
 @app.route('/graph', methods=['POST'])
 def graph():
@@ -116,5 +132,4 @@ def graph():
 
 
 if __name__ == '__main__':
-    #person = Person("Jacob", {}, {}, 1000)
     app.run(debug=True)

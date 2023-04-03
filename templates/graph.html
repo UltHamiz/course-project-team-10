@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monthly Income Trend</title>
+    <title>Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='graph.css') }}" />
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <h1>Monthly Income Trend</h1>
+    <h1>Trends</h1>
 
     <div id="income-trend-plot"></div>
 
@@ -30,8 +30,8 @@
     <!-- Add input fields for year and month -->
     <label for="year">Year:</label>
     <input type="number" id="year" name="year" value="2022" min="1900" max="2100">
-    <label for="month">Month:</label>
-    <input type="number" id="month" name="month" value="12" min="1" max="12">
+    <label for="month" id="month-label">Month:</label>
+    <input type="number" id="month" name="month" value="1" min="1" max="12">
 
     <script>
       function updateGraph() {
@@ -40,16 +40,37 @@
   var range = document.getElementById("range").value;
   var functionType = document.getElementById("function-type").value;
 
-  var apiEndpoint = "";
-
-  if (range === "Monthly") {
-    apiEndpoint = `/trend_monthly_income/${year}/${month}`;
-  } else if (range === "Yearly") {
-    apiEndpoint = `/trend_yearly_income/${year}`;
+  // Hide the Month field if Yearly is selected
+  if (range === "Yearly" ) {
+    document.getElementById("month-label").style.display = "none";
+    document.getElementById("month").style.display = "none";
+  } else {
+    document.getElementById("month-label").style.display = "inline-block";
+    document.getElementById("month").style.display = "inline-block";
   }
 
+  var apiEndpoint = "";
+
+  if (range === "Monthly" && functionType === "Income") {
+    apiEndpoint = `/trend_monthly_income/${year}/${month}`;
+  } else if (range === "Yearly" && functionType === "Income") {
+    apiEndpoint = `/trend_yearly_income/${year}`;
+  } else if (range === "Monthly" && functionType === "Spending") {
+    apiEndpoint = `/trend_monthly_spend/${year}/${month}`;
+  } else if (range === "Monthly" && functionType === "Balance") {
+    apiEndpoint = `/trend_monthly_diff/${year}/${month}`;
+  } 
+
   $.getJSON(apiEndpoint, function (data) {
+    console.log(data);
     var y = null;
+    var x = null;
+
+if (range === "Monthly") {
+  x = data.map((row) => row.Days);
+} else if (range === "Yearly") {
+  x = data.map((row) => row.Month);
+}
 
     if (functionType === "Income") {
       y = data.map((row) => row.Income);
@@ -60,7 +81,7 @@
     }
 
     var trace = {
-      x: data.map((row) => row.Days),
+      x: x,
       y: y,
       mode: "lines+markers",
       type: "scatter",
