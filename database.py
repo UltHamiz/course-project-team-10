@@ -33,6 +33,18 @@ class Person:
                 for i in range(0, len(income_list)):
                     monthly += income_list[i].amount
         return(monthly)
+    
+# This will take in the current month and year and return the monthly spend for it    
+    def get_total_monthly_spending(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        monthly = 0
+        for i in range (1, 31):
+            temp = datetime.date(year, month, i)
+            if (temp in self.spend):
+                spend_list = self.spend[temp]
+                for i in range(0, len(spend_list)):
+                    monthly += spend_list[i].amount
+        return(monthly)
+
 
 # This will take in the current month and year and return a dataframe for the monthly trend
     
@@ -54,23 +66,7 @@ class Person:
                 days.append(i)
         trend = pd.DataFrame({'Days': days, 'Income': income_days})
         return(trend)
-    
-    def get_trend_yearly_income(self, year = datetime.datetime.now().year):
-        income_monthly = []
-        month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        month_with_income = []
 
-        for i in range(12):
-            
-            monthly_income = self.get_total_monthly_income(i + 1, year)
-            if (monthly_income != 0):
-                income_monthly.append(monthly_income)
-                month_with_income.append(month[i])
-                
-        
-        trend = pd.DataFrame({'Month': month_with_income, 'Income': income_monthly})
-        return(trend)
-    
 # Returns data frame containing monthly spending, meant to have output be used in graphing spending trend
     def get_trend_monthly_spend(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
         monthly = 0 
@@ -89,6 +85,38 @@ class Person:
                 spend_days.append(monthly)
                 days.append(i)
         trend = pd.DataFrame({'Days': days, 'Spending': spend_days})
+        return(trend)
+    
+    def get_trend_yearly_income(self, year = datetime.datetime.now().year):
+        income_monthly = []
+        month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        month_with_income = []
+
+        for i in range(12):
+            
+            monthly_income = self.get_total_monthly_income(i + 1, year)
+            if (monthly_income != 0):
+                income_monthly.append(monthly_income)
+                month_with_income.append(month[i])
+                
+        
+        trend = pd.DataFrame({'Month': month_with_income, 'Income': income_monthly})
+        return(trend)
+    
+    def get_trend_yearly_spend(self, year = datetime.datetime.now().year):
+        spend_monthly = []
+        month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        month_with_spend = []
+
+        for i in range(12):
+            
+            monthly_spend = self.get_total_monthly_income(i + 1, year)
+            if (monthly_spend != 0):
+                spend_monthly.append(monthly_spend)
+                month_with_spend.append(month[i])
+                
+        
+        trend = pd.DataFrame({'Month': month_with_spend, 'Income': spend_monthly})
         return(trend)
      
 
@@ -131,60 +159,9 @@ class Person:
 #Remove Transaction from Spend from certain day if it exists
     def delete_spending(self, transaction, dates = date.today()):
         if (dates in self.spend) and (transaction in self.spend[dates]):
-            self.spend[dates].remove(transaction)
+            self.spend[dates].remove(transaction)        
 
-# This will take in the current month and year and return the monthly spend for it    
-    def get_total_monthly_spending(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
-        monthly = 0
-        for i in range (1, 31):
-            temp = datetime.date(year, month, i)
-            if (temp in self.spend):
-                spend_list = self.spend[temp]
-                for i in range(0, len(spend_list)):
-                    monthly += spend_list[i].amount
-        return(monthly)
-
-# This will take in the current month, year and the category for which we need to find the monthly spend for and returns the monthly spend for the category    
-    def get_categorical_monthly_spending(self, category, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
-        monthly = 0
-        for i in range (1, 31):
-            temp = str(year) + "-" + str(month) + "-" + str(i)
-            if (temp in self.spend):
-                spend_list = self.spend[temp]
-                for j in range(0, len(spend_list)):
-                    if (spend_list[j].category == category):
-                        monthly += spend_list[j].amount
-        return(monthly)
-    
-# Return Spending for a certain category across an inputted interval of time    
-    
-    def get_categorical_x_spending(self, category, time_length, date = datetime.datetime.now()):
-        total = 0
-        today = date
-        for i in range (1, time_length):
-            if (today in self.spend) :
-                spend_list = self.spend[today]
-                for j in range(0, len(spend_list)):
-                    if (spend_list[j].category == category):
-                        total += spend_list[j].amount
-            today = today + datetime.timedelta(days = 1)
-        return(total)
-    
-    #Returns a list of items of a certain category over a specified time period
-    def get_categorical_x_spending_list(self, category, time_length,  date = datetime.datetime.now()):
-        total = []
-        today = date
-        for i in range (1, time_length):
-            if (today in self.spend) :
-                spend_list = self.spend[today]
-                for j in range(0, len(spend_list)):
-                    if (spend_list[j].category == category):
-                        total.append(spend_list[j]) 
-            today = today + timedelta(days = 1)
-        return(total)
-            
-
-    # Returns Spending/Income for one Day in a particular category
+# Returns Spending/Income for one Day in a particular category
     
     def get_categorical_day_income(self, category, date):
         total = 0
@@ -201,6 +178,91 @@ class Person:
                 if (self.spend[date][i].category == category):
                     total += self.spend[date][i].amount
         return total
+    
+# Returns the monthly Income/Spend for the specified category in the specified month    
+    def get_categorical_monthly_income(self, category, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        total = 0
+        for date in self.income:
+            if date.year == year and date.month == month:
+                for i in range(len(self.income[date])):
+                    if (self.income[date][i].category == category):
+                        total += self.income[date][i].amount
+        return total
+    
+    def get_categorical_monthly_spending(self, category, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        total = 0
+        for date in self.spend:
+            if date.year == year and date.month == month:
+                for i in range(len(self.spend[date])):
+                    if (self.spend[date][i].category == category):
+                        total += self.spend[date][i].amount
+        return total
+    
+# Returns the yearly Income/Spend for the specified category in the specified year
+
+    def get_categorical_yearly_income(self, category, year = datetime.datetime.now().year):
+        total = 0
+        for date in self.income:
+            if date.year == year:
+                for i in range(len(self.income[date])):
+                    if (self.income[date][i].category == category):
+                        total += self.income[date][i].amount
+        
+        return total
+    
+    def get_categorical_yearly_spend(self, category, year = datetime.datetime.now().year):
+        total = 0
+        for date in self.spend:
+            if date.year == year:
+                for i in range(len(self.spend[date])):
+                    if (self.spend[date][i].category == category):
+                        total += self.spend[date][i].amount
+        
+        return total
+
+# Returns Income/Spending for all time for a particular category
+    
+    def get_total_categorical_income(self, category):
+        total = 0
+        for date in self.income:
+            for i in range(len(self.income[date])):
+                if (self.income[date][i].category == category):
+                    total += self.income[date][i].amount
+        return total
+    
+    def get_total_categorical_spend(self, category):
+        total = 0
+        for date in self.spend:
+            for i in range(len(self.spend[date])):
+                if (self.spend[date][i].category == category):
+                    total += self.spend[date][i].amount
+        return total
+
+# Return Income/Spending for a certain category across an inputted interval of time    
+    
+    def get_categorical_x_spending(self, category, time_length, date = datetime.datetime.now()):
+        total = 0
+        today = date
+        for i in range (1, time_length):
+            if (today in self.spend) :
+                spend_list = self.spend[today]
+                for j in range(0, len(spend_list)):
+                    if (spend_list[j].category == category):
+                        total += spend_list[j].amount
+            today = today + datetime.timedelta(days = 1)
+        return(total)
+
+    def get_categorical_x_income(self, category, time_length, date = datetime.datetime.now()):
+        total = 0
+        today = date
+        for i in range (1, time_length):
+            if (today in self.income) :
+                income_list = self.income[today]
+                for j in range(0, len(income_list)):
+                    if (income_list[j].category == category):
+                        total += income_list[j].amount
+            today = today + datetime.timedelta(days = 1)
+        return(total)
     
     
     
@@ -366,18 +428,20 @@ person = Person("Jacob", {}, {}, 1000)
 person.add_income(income, datetime.date(2022, 12, 1))
 person.add_income(income2, datetime.date(2022, 12, 3))
 person.add_income(income2, datetime.date(2022, 12, 5))
-person.add_income(income2, datetime.date(2022, 12, 14))
-person.add_income(income2, datetime.date(2022, 12, 31))
-person.add_income(income2, datetime.date(2022, 12, 22))
-person.add_income(income2, datetime.date(2022, 1, 3))
-person.add_income(income2, datetime.date(2022, 1, 30))
+person.add_income(income, datetime.date(2022, 12, 14))
+person.add_income(income, datetime.date(2022, 12, 31))
+person.add_income(income, datetime.date(2022, 12, 22))
+person.add_income(income, datetime.date(2022, 1, 3))
+person.add_income(income, datetime.date(2022, 1, 30))
 
 
 person.add_spending(spend, datetime.date(2022, 12, 5))
+person.add_spending(spend, datetime.date(2022, 12, 31))
 person.add_spending(spend2, datetime.date(2022, 12, 15))
 person.add_spending(spend3, datetime.date(2023, 1, 2))
 person.add_spending(spend2, datetime.date(2022, 1, 15))
 person.add_spending(spend3, datetime.date(2023, 1, 1))
+
 print("Income: ",person.get_total_income())
 print("Monthly December Income: ", person.get_total_monthly_income(12, 2022))
 print("Spending: ",person.get_total_spending()) 
@@ -387,9 +451,16 @@ print(person.get_trend_monthly_income(1, 2022))
 print(person.get_trend_yearly_income(2022))
 print(person.get_trend_monthly_spend(12, 2022))
 print(person.get_trend_monthly_spend(1, 2022))
-print("Work income:", person.get_categorical_day_income("Work", datetime.date(2022, 12, 1)))
-print("Gift spend:", person.get_categorical_day_spend("Gift", datetime.date(2022, 12, 15)))
-print("Food spend:", person.get_categorical_x_spending(category1, 40, datetime.date(2022, 12, 4)))
+print("Work income for one day:", person.get_categorical_day_income("Work", datetime.date(2022, 12, 1)))
+print("Gift spend for one day:", person.get_categorical_day_spend("Gift", datetime.date(2022, 12, 15)))
+print("Food spend in one month:", person.get_categorical_monthly_spending(category1, 12, 2022))
+print("Work income for one month:", person.get_categorical_monthly_income(category2, 12, 2022))
+print("Work income for a year:", person.get_categorical_yearly_income(category2, 2022))
+print("Food spend for a year:", person.get_categorical_yearly_spend(category1, 2022))
+print("Work income for all time:", person.get_total_categorical_income(category2))
+print("Food spend for all time:", person.get_total_categorical_spend(category1))
+print("Food spend over a time period:", person.get_categorical_x_spending(category1, 40, datetime.date(2022, 12, 4)))
+print("Work income over a time period:", person.get_categorical_x_income(category2, 17, datetime.date(2022, 12, 14)))
 
 # print(person.get_x_spending(10, ))
 
