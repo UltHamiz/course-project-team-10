@@ -264,6 +264,30 @@ class Person:
             today = today + datetime.timedelta(days = 1)
         return(total)
     
+# Returns a dictionary containing all the Income/Spend for all the category in the class for the specified year
+
+    def get_yearly_income_by_category(self, year):
+        yearly_income = {}
+        for date in self.income:
+            if date.year == year:
+                for item in self.income[date]:
+                    if item.category in yearly_income:
+                        yearly_income[item.category] += item.amount
+                    else:
+                        yearly_income[item.category] = item.amount
+        return yearly_income
+    
+    def get_yearly_spend_by_category(self, year):
+        yearly_spend = {}
+        for date in self.spend:
+            if date.year == year:
+                for item in self.spend[date]:
+                    if item.category in yearly_spend:
+                        yearly_spend[item.category] += item.amount
+                    else:
+                        yearly_spend[item.category] = item.amount
+        return yearly_spend
+    
     
     
     def get_x_spending(self,  time_length, day, month= datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
@@ -461,6 +485,9 @@ print("Work income for all time:", person.get_total_categorical_income(category2
 print("Food spend for all time:", person.get_total_categorical_spend(category1))
 print("Food spend over a time period:", person.get_categorical_x_spending(category1, 40, datetime.date(2022, 12, 4)))
 print("Work income over a time period:", person.get_categorical_x_income(category2, 17, datetime.date(2022, 12, 14)))
+
+print("Categorical yearly income:", person.get_yearly_income_by_category(2022))
+print("Categorical yearly spend:", person.get_yearly_spend_by_category(2022))
 
 # print(person.get_x_spending(10, ))
 
