@@ -17,7 +17,7 @@ class Person:
         self.needlimit = 0.5*monthlyIncome
         self.wantlimit = 0.3*monthlyIncome
         self.monthly_income = monthlyIncome
-    
+
     
 #Income and Spending functions
 #2022-12-27  ----- example of date from date.today
@@ -318,15 +318,14 @@ class Person:
 
 # # This takes in an object of class spend and appned it to the list of values in the dictionary with todays date as the key      
     def add_spending(self, transaction, dates = date.today()):
-        # if (transaction.amount + self.get_total_monthly_spending()) > self.wantlimit:
-        #     print("Spending over Want Limit")
-        # elif (transaction.amount + self.get_total_monthly_spending()) > self.needlimit:
-        #     print("Spending over Need Limit")
-        
         if dates in self.spend:
             self.spend[dates].append(transaction)
         else:
             self.spend[dates] = [transaction]
+        
+        percentage = self.warning_spending(dates)
+        if percentage > 0:
+            print("You are going over the spending limit by ", percentage)
 
 # This will return the total life income of the person    
     def get_total_income(self):
@@ -380,6 +379,16 @@ class Person:
         total -= self.get_day_total_income()
         return(total)  
     
+    def warning_spending(self, dates = date.today()):
+        monthlyincome = self.get_total_monthly_income(dates.month, dates.year)
+        monthlyspend = self.get_total_monthly_spending(dates.month, dates.year)
+        if (monthlyincome == 0):
+            return 100
+        check = monthlyspend/monthlyincome
+        if (check < 0.8):
+            return 0
+        else:
+            return (check-0.8)*100
 
     
 #Income Class
