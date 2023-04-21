@@ -24,26 +24,43 @@ class Person:
 
 # This will take in the current month and year and return the monthly income for it
     def get_total_monthly_income(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+        if month is None:
+            month = datetime.datetime.now().month
+
+        if year is None:
+            year = datetime.datetime.now().year
+
         monthly = 0
-        num_days = calendar.monthrange(year, month)[1]
-        for i in range (1, num_days):
-            temp = datetime.date(year, month, i)
-            if (temp in self.income):
-                income_list = self.income[temp]
-                for i in range(0, len(income_list)):
-                    monthly += income_list[i].amount
-        return(monthly)
+        for i in range(1, 32):
+            try:
+                temp = datetime.date(year, month, i)
+                if (temp in self.income):
+                    income_list = self.income[temp]
+                    for j in range(0, len(income_list)):
+                        monthly += income_list[j].amount
+            except ValueError:
+                break
+        return monthly
     
 # This will take in the current month and year and return the monthly spend for it    
-    def get_total_monthly_spending(self, month = datetime.datetime.now().strftime("%B"), year = datetime.datetime.now().year):
+    def get_total_monthly_spending(self, month=None, year=None):
+        if month is None:
+            month = datetime.datetime.now().month
+
+        if year is None:
+            year = datetime.datetime.now().year
+
         monthly = 0
-        for i in range (1, 31):
-            temp = datetime.date(year, month, i)
-            if (temp in self.spend):
-                spend_list = self.spend[temp]
-                for i in range(0, len(spend_list)):
-                    monthly += spend_list[i].amount
-        return(monthly)
+        for i in range(1, 32):
+            try:
+                temp = datetime.date(year, month, i)
+                if (temp in self.spend):
+                    spend_list = self.spend[temp]
+                    for j in range(0, len(spend_list)):
+                        monthly += spend_list[j].amount
+            except ValueError:
+                break
+        return monthly
 
 
 # This will take in the current month and year and return a dataframe for the monthly trend
@@ -423,57 +440,134 @@ class Spend():
         self.type = types
 
 
-# Testing Functions
-transaction_name1 = "Grocery"
-amount1 = 100
-category1 = "Food"
-notes1 = "Shopped at Target"
-types1 = "Cash"
-
-transaction_name2 = "Salary"
-amount2 = 200
-category2 = "Work"
-notes2 = "CA for course"
-types2 = "Debit"
-
-transaction_name3 = "Gift for bday"
-amount3 = 500
-category3 = "Gift"
-notes3 = "Thanks Hamiz"
-types3 = "Cash"
-
-transaction_name4 = "Too much"
-amount4 = 500
-category4 = "Gift"
-notes4 = "Return money to Hamiz"
-types4 = "Checking"
-
-
 #Spending/Income Transaction Objects
-spend = Spend(transaction_name1, amount1, category1, notes1, types1)
-income = Income(transaction_name2, amount2, category2, notes2, types2)
-income2 = Income(transaction_name3, amount3, category3, notes3, types3)
-spend2 = Spend(transaction_name4, amount4, category4, notes4, types4)
+spend = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend2 = Spend("Rent", 600, "Rent", "", "Debit")
+spend3 = Spend("Party", 200, "Party", "", "Debit")
+spend4 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend5 = Spend("Rent", 600, "Rent", "", "Debit")
+spend6 = Spend("Party", 200, "Party", "", "Debit")
+spend7 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend8 = Spend("Rent", 600, "Rent", "", "Debit")
+spend9 = Spend("Party", 200, "Party", "", "Debit")
+spend10 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend11 = Spend("Rent", 600, "Rent", "", "Debit")
+spend12 = Spend("Party", 200, "Party", "", "Debit")
+spend13 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend14 = Spend("Rent", 600, "Rent", "", "Debit")
+spend15 = Spend("Party", 200, "Party", "", "Debit")
+spend16 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend17 = Spend("Rent", 600, "Rent", "", "Debit")
+spend18 = Spend("Party", 200, "Party", "", "Debit")
+spend19 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend20 = Spend("Rent", 600, "Rent", "", "Debit")
+spend21 = Spend("Party", 200, "Party", "", "Debit")
+spend22 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend23 = Spend("Rent", 600, "Rent", "", "Debit")
+spend24 = Spend("Party", 200, "Party", "", "Debit")
+spend25 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend26 = Spend("Rent", 600, "Rent", "", "Debit")
+spend27 = Spend("Party", 200, "Party", "", "Debit")
+spend28 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend29 = Spend("Rent", 600, "Rent", "", "Debit")
+spend30 = Spend("Party", 200, "Party", "", "Debit")
+spend31 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend32 = Spend("Rent", 600, "Rent", "", "Debit")
+spend33 = Spend("Party", 200, "Party", "", "Debit")
+spend34 = Spend("Groceries", 200, "Groceries", "", "Debit")
+spend35 = Spend("Rent", 600, "Rent", "", "Debit")
+spend36 = Spend("Party", 200, "Party", "", "Debit")
 
-spend3 = Spend(transaction_name4, amount1, category1, notes1, types1)
-person = Person("Jacob", {}, {}, 1000)
-
-person.add_income(income, datetime.date(2022, 12, 1))
-person.add_income(income2, datetime.date(2022, 12, 3))
-person.add_income(income2, datetime.date(2022, 12, 5))
-person.add_income(income, datetime.date(2022, 12, 14))
-person.add_income(income, datetime.date(2022, 12, 31))
-person.add_income(income, datetime.date(2022, 12, 22))
-person.add_income(income, datetime.date(2022, 1, 3))
-person.add_income(income, datetime.date(2022, 1, 30))
+spend37 = Spend("Car Damanges", 400, "Car", "", "Debit")
+spend38 = Spend("Ticket", 200, "Ticket", "", "Debit")
+spend39 = Spend("Doctor", 500, "Health", "", "Debit")
 
 
-person.add_spending(spend, datetime.date(2022, 12, 5))
-person.add_spending(spend, datetime.date(2022, 12, 31))
-person.add_spending(spend2, datetime.date(2022, 12, 15))
-person.add_spending(spend3, datetime.date(2023, 1, 2))
+person = Person("Jacob", {}, {}, 1200)
+
+income = Income("Work", 1400, "Work", "", "Debit")
+income2 = Income("Work", 1400, "Work", "", "Debit")
+income3 = Income("Work", 1400, "Work", "", "Debit")
+income4 = Income("Work", 1400, "Work", "", "Debit")
+income5 = Income("Work", 1400, "Work", "", "Debit")
+income6 = Income("Work", 1400, "Work", "", "Debit")
+income7 = Income("Work", 1400, "Work", "", "Debit")
+income8 = Income("Work", 1400, "Work", "", "Debit")
+income9 = Income("Work", 1400, "Work", "", "Debit")
+income10 = Income("Work", 1400, "Work", "", "Debit")
+income11 = Income("Work", 1400, "Work", "", "Debit")
+income12 = Income("Work", 1400, "Work", "", "Debit")
+
+
+income17 = Income("Birthday", 200, "Gift", "", "Cash")
+income18 = Income("Raffle", 20, "Gift", "", "Venmo")
+income19 = Income("Fantasy Football", 50, "Gift", "", "Venmo")
+income20 = Income("March Madness", 75, "Gift", "", "Venmo")
+income21 = Income("Christmas", 100, "Gift", "", "Cash")
+
+
+
+person.add_income(income, datetime.date(2022, 1, 1))
+person.add_income(income2, datetime.date(2022, 2, 1))
+person.add_income(income3, datetime.date(2022, 3, 1))
+person.add_income(income4, datetime.date(2022, 4, 3))
+person.add_income(income5, datetime.date(2022, 5, 1))
+person.add_income(income6, datetime.date(2022, 6, 3))
+person.add_income(income7, datetime.date(2022, 7, 1))
+person.add_income(income8, datetime.date(2022, 8, 3))
+person.add_income(income9, datetime.date(2022, 9, 1))
+person.add_income(income10, datetime.date(2022, 10, 3))
+person.add_income(income11, datetime.date(2022, 11, 1))
+person.add_income(income12, datetime.date(2022, 12, 3))
+person.add_income(income17, datetime.date(2022, 6, 20))
+person.add_income(income18, datetime.date(2022, 8, 15))
+person.add_income(income19, datetime.date(2022, 3, 15))
+person.add_income(income20, datetime.date(2022, 3, 7))
+person.add_income(income21, datetime.date(2022, 12, 25))
+
+
+
+
+person.add_spending(spend, datetime.date(2022, 1, 10))
 person.add_spending(spend2, datetime.date(2022, 1, 15))
-person.add_spending(spend3, datetime.date(2023, 1, 1))
+person.add_spending(spend3, datetime.date(2022, 1, 17))
+person.add_spending(spend4, datetime.date(2022, 2, 20))
+person.add_spending(spend5, datetime.date(2022, 2, 15))
+person.add_spending(spend6, datetime.date(2022, 2, 17))
+person.add_spending(spend7, datetime.date(2022, 3, 10))
+person.add_spending(spend8, datetime.date(2022, 3, 15))
+person.add_spending(spend9, datetime.date(2022, 3, 17))
+person.add_spending(spend10, datetime.date(2022, 4, 10))
+person.add_spending(spend11, datetime.date(2022, 4, 15))
+person.add_spending(spend12, datetime.date(2022, 4, 17))
+person.add_spending(spend13, datetime.date(2022, 5, 10))
+person.add_spending(spend14, datetime.date(2022, 5, 15))
+person.add_spending(spend15, datetime.date(2022, 5, 17))
+person.add_spending(spend16, datetime.date(2022, 6, 10))
+person.add_spending(spend17, datetime.date(2022, 6, 15))
+person.add_spending(spend18, datetime.date(2022, 6, 17))
+person.add_spending(spend19, datetime.date(2022, 7, 10))
+person.add_spending(spend20, datetime.date(2022, 7, 15))
+person.add_spending(spend21, datetime.date(2022, 7, 17))
+person.add_spending(spend22, datetime.date(2022, 8, 10))
+person.add_spending(spend23, datetime.date(2022, 8, 15))
+person.add_spending(spend24, datetime.date(2022, 8, 17))
+person.add_spending(spend25, datetime.date(2022, 9, 10))
+person.add_spending(spend26, datetime.date(2022, 9, 15))
+person.add_spending(spend27, datetime.date(2022, 9, 17))
+person.add_spending(spend28, datetime.date(2022, 10, 10))
+person.add_spending(spend29, datetime.date(2022, 10, 15))
+person.add_spending(spend30, datetime.date(2022, 10, 17))
+person.add_spending(spend31, datetime.date(2022, 11, 10))
+person.add_spending(spend32, datetime.date(2022, 11, 15))
+person.add_spending(spend33, datetime.date(2022, 11, 17))
+person.add_spending(spend34, datetime.date(2022, 12, 10))
+person.add_spending(spend35, datetime.date(2022, 12, 15))
+person.add_spending(spend36, datetime.date(2022, 12, 17))
+person.add_spending(spend37, datetime.date(2022, 10, 27))
+person.add_spending(spend38, datetime.date(2022, 2, 9))
+person.add_spending(spend39, datetime.date(2022, 12, 29))
+
 
 print("Income: ",person.get_total_income())
 print("Monthly December Income: ", person.get_total_monthly_income(12, 2022))
@@ -484,16 +578,16 @@ print(person.get_trend_monthly_income(1, 2022))
 print(person.get_trend_yearly_income(2022))
 print(person.get_trend_monthly_spend(12, 2022))
 print(person.get_trend_monthly_spend(1, 2022))
-print("Work income for one day:", person.get_categorical_day_income("Work", datetime.date(2022, 12, 1)))
-print("Gift spend for one day:", person.get_categorical_day_spend("Gift", datetime.date(2022, 12, 15)))
-print("Food spend in one month:", person.get_categorical_monthly_spending(category1, 12, 2022))
-print("Work income for one month:", person.get_categorical_monthly_income(category2, 12, 2022))
-print("Work income for a year:", person.get_categorical_yearly_income(category2, 2022))
-print("Food spend for a year:", person.get_categorical_yearly_spend(category1, 2022))
-print("Work income for all time:", person.get_total_categorical_income(category2))
-print("Food spend for all time:", person.get_total_categorical_spend(category1))
-print("Food spend over a time period:", person.get_categorical_x_spending(category1, 40, datetime.date(2022, 12, 4)))
-print("Work income over a time period:", person.get_categorical_x_income(category2, 17, datetime.date(2022, 12, 14)))
+print("Work income for one day:", person.get_categorical_day_income("Work", datetime.date(2022, 12, 3)))
+print("Health spend for one day:", person.get_categorical_day_spend("Health", datetime.date(2022, 12, 29)))
+print("Groceries spend in one month:", person.get_categorical_monthly_spending("Groceries", 12, 2022))
+print("Work income for one month:", person.get_categorical_monthly_income("Work", 12, 2022))
+print("Work income for a year:", person.get_categorical_yearly_income("Work", 2022))
+print("Groceries spend for a year:", person.get_categorical_yearly_spend("Groceries", 2022))
+print("Work income for all time:", person.get_total_categorical_income("Work"))
+print("Groceries spend for all time:", person.get_total_categorical_spend("Groceries"))
+print("Groceries spend over a time period:", person.get_categorical_x_spending("Groceries", 40, datetime.date(2022, 12, 4)))
+print("Work income over a time period:", person.get_categorical_x_income("Work", 20, datetime.date(2022, 11, 19)))
 
 print("Categorical yearly income:", person.get_yearly_income_by_category(2022))
 print("Categorical yearly spend:", person.get_yearly_spend_by_category(2022))
