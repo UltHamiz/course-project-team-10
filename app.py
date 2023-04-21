@@ -100,6 +100,12 @@ def add_spending():
     
     return index()
 
+@app.route('/api/income/<int:year>', methods=['GET'])
+def get_yearly_income_by_cat(year):
+    yearly_income = person.get_yearly_income_by_category(year)
+    print(yearly_income)
+    return jsonify(yearly_income)
+
 # graph.html routes
 
 @app.route('/trend_monthly_income/<int:year>/<int:month>', methods=['GET'])
@@ -129,6 +135,10 @@ def trend_monthly_difference(year, month):
 @app.route('/graph', methods=['POST'])
 def graph():
     return render_template('graph.html')
+
+@app.route('/cat', methods=['POST'])
+def cat():
+    return render_template('cat.html')
 
 
 if __name__ == '__main__':

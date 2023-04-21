@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pie Chart For Category</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .legend-table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 30px;
+        }
+
+        .legend-table td, .legend-table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .legend-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 600px;">
+        <canvas id="pieChart"></canvas>
+    </div>
+    <table class="legend-table" id="legendTable">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody id="legendBody">
+        </tbody>
+    </table>
+
+    <script>
+        const fetchData = async (year) => {
+            const response = await fetch(`/api/income/${year}`);
+            const data = await response.json();
+            return data;
+        };
+
+        const createPieChart = (data) => {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            const chartData = {
+                labels: Object.keys(data),
+                datasets: [{
+                    data: Object.values(data),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ]
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Yearly Income by Category'
+                    }
+                }
+            });
+        };
+
+        const createLegendTable = (data) => {
+            const tbody = document.getElementById('legendBody');
+            tbody.innerHTML = '';
+
+            for (const [category, value] of Object.entries(data)) {
+                const tr = document.createElement('tr');
+                const categoryCell = document.createElement('td');
+                const valueCell = document.createElement('td');
+
+                categoryCell.textContent = category;
+                valueCell.textContent = value;
+
+                tr.appendChild(categoryCell);
+                tr.appendChild(valueCell);
+                tbody.appendChild(tr);
+            }
+        };
+
+        fetchData(2022).then(data => {
+            createPieChart(data);
+            createLegendTable(data);
+        });  // Replace 2023 with the desired year
+    </script>
+</body>
+</html>
