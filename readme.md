@@ -20,4 +20,5 @@ Technical Architecture:
  
  Group Members and Primary Roles:
  Divyam, Justin, Hamiz - Backend
- Abhi - Backend
+ 
+ Abhi - Frontend
