@@ -1,4 +1,4 @@
-course-project-team-10 LOG - Commit 1: Div, Hamiz, and Justin worked on creating the database to store transactions. We created a person, income, and spending class. The income and spending class will be stored in a dictionary in the person class along with functions to access the income and spending class. Abhi set up the react and flask architecture and used the functions the team created to make a simple flask application and a react front end.
+course-project-team-10 LOG - Hamiz, Div, and Justin worked on creating the database to store transactions. We created a person, income, and spending class. The income and spending class will be stored in a dictionary in the person class along with functions to access the income and spending class. Abhi set up the react and flask architecture and used the functions the team created to make a simple flask application and a react front end.
 
 
 Personal Finance App
@@ -18,10 +18,4 @@ Technical Architecture
  getting total spending and income, being able to filter data by specific categories, and getting trends for the data based on different time intervals (to then be displayed on the front end.
  
  - Frontend: Created Using Flask (languages of HTML and CSS), allows users to interact with backend by inputing transactions, specifying differetn amounts, and categories. Also allows user to monitor trends of data across various time intervals, as well as categorical breakdowns of data.
- 
- 
- Group Members and Primary Roles:
- 
- Divyam, Justin, Hamiz - Backend
- 
- Abhi - Frontend
+
